@@ -74,6 +74,20 @@ def add_url_embeddings(urls: list[str]):
 
 
 try:
+    
+
+    # Define the subjects and departments
+    subjects = ['COMP3018', 'CULT2017', 'NATS2033']
+    departments = ['Computer Science', 'Sociology', 'Biology']
+
+    # Create dropdown widgets
+    selected_subject = st.selectbox("Select a Subject", subjects)
+    selected_department = st.selectbox("Select a Department", departments)
+
+    # Display the selected values
+    st.write(f"You selected the subject: {selected_subject}")
+    st.write(f"You selected the department: {selected_department}")
+
     with st.expander("Add documents in Batch", expanded=True):
         config = ConfigHelper.get_active_config_or_default()
         file_type = [
