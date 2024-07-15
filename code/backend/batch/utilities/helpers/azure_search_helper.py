@@ -117,6 +117,12 @@ class AzureSearchHelper:
                 filterable=True,
             ),
             SearchableField(
+                name="subject",
+                type=SearchFieldDataType.String,
+                facetable=True,
+                filterable=True,
+            ),
+            SearchableField(
                 name="source",
                 type=SearchFieldDataType.String,
                 filterable=True,
@@ -218,6 +224,10 @@ class AzureSearchHelper:
             ),
             SearchableField(
                 name="content",
+                type=SearchFieldDataType.String,
+            ),
+            SearchableField(
+                name="subject",
                 type=SearchFieldDataType.String,
             ),
             SearchField(

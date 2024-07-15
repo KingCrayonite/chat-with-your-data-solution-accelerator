@@ -64,6 +64,7 @@ class EnvHelper:
             "AZURE_SEARCH_FILENAME_COLUMN", "filepath"
         )
         self.AZURE_SEARCH_TITLE_COLUMN = os.getenv("AZURE_SEARCH_TITLE_COLUMN", "title")
+
         self.AZURE_SEARCH_URL_COLUMN = os.getenv("AZURE_SEARCH_URL_COLUMN", "url")
         self.AZURE_SEARCH_FIELDS_TAG = os.getenv("AZURE_SEARCH_FIELDS_TAG", "tag")
         self.AZURE_SEARCH_FIELDS_METADATA = os.getenv(
@@ -162,6 +163,7 @@ class EnvHelper:
         os.environ["OPENAI_API_TYPE"] = self.OPENAI_API_TYPE
         os.environ["OPENAI_API_KEY"] = self.OPENAI_API_KEY
         os.environ["OPENAI_API_VERSION"] = self.OPENAI_API_VERSION
+
         # Azure Functions - Batch processing
         self.BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:7071")
         self.FUNCTION_KEY = os.getenv("FUNCTION_KEY")

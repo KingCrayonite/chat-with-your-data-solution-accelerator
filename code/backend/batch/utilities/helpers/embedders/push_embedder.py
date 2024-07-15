@@ -3,7 +3,7 @@ import json
 import logging
 from typing import List
 from urllib.parse import urlparse
-
+import os
 from ...helpers.llm_helper import LLMHelper
 from ...helpers.env_helper import EnvHelper
 from ..azure_computer_vision_client import AzureComputerVisionClient
@@ -20,7 +20,7 @@ from ..document_chunking_helper import DocumentChunking
 from ...common.source_document import SourceDocument
 
 logger = logging.getLogger(__name__)
-
+logger.setLevel(level=os.environ.get("LOGLEVEL", "INFO").upper())
 
 class PushEmbedder(EmbedderBase):
     def __init__(self, blob_client: AzureBlobStorageClient, env_helper: EnvHelper):
@@ -39,11 +39,19 @@ class PushEmbedder(EmbedderBase):
 
     def embed_file(self, source_url: str, file_name: str):
         file_extension = file_name.split(".")[-1]
+
+        # Get subject from filename
+        try:
+            subject = file_name.split("_")[0]
+        except Exception as e:
+            subject = 'Unknown'
         embedding_config = self.embedding_configs.get(file_extension)
+
         self.__embed(
             source_url=source_url,
             file_extension=file_extension,
             embedding_config=embedding_config,
+            subject=subject,
         )
         if file_extension != "url":
             self.blob_client.upsert_blob_metadata(
@@ -51,7 +59,7 @@ class PushEmbedder(EmbedderBase):
             )
 
     def __embed(
-        self, source_url: str, file_extension: str, embedding_config: EmbeddingConfig
+        self, source_url: str, file_extension: str, embedding_config: EmbeddingConfig,subject:str
     ):
         documents_to_upload: List[SourceDocument] = []
         if (
@@ -65,7 +73,7 @@ class PushEmbedder(EmbedderBase):
             image_vector = self.azure_computer_vision_client.vectorize_image(source_url)
             documents_to_upload.append(
                 self.__create_image_document(
-                    source_url, image_vector, caption, caption_vector
+                    source_url, image_vector, caption, caption_vector,subject,
                 )
             )
         else:
@@ -76,8 +84,11 @@ class PushEmbedder(EmbedderBase):
                 documents, embedding_config.chunking
             )
 
+            #Add subject field to each document object to be uploaded
             for document in documents:
-                documents_to_upload.append(self.__convert_to_search_document(document))
+                document.subject = subject
+                documents_to_upload.append(self.__convert_to_search_document(document,subject))
+
 
         response = self.azure_search_helper.get_search_client().upload_documents(
             documents_to_upload
@@ -112,7 +123,7 @@ If the image is mostly text, use OCR to extract the text as it is displayed in t
         caption = response.choices[0].message.content
         return caption
 
-    def __convert_to_search_document(self, document: SourceDocument):
+    def __convert_to_search_document(self, document: SourceDocument,subject:str):
         embedded_content = self.llm_helper.generate_embeddings(document.content)
         metadata = {
             "id": document.id,
@@ -122,6 +133,7 @@ If the image is mostly text, use OCR to extract the text as it is displayed in t
             "offset": document.offset,
             "page_number": document.page_number,
             "chunk_id": document.chunk_id,
+            "subject": subject,
         }
         return {
             "id": document.id,
@@ -129,9 +141,11 @@ If the image is mostly text, use OCR to extract the text as it is displayed in t
             "content_vector": embedded_content,
             "metadata": json.dumps(metadata),
             "title": document.title,
+            "subject":document.subject,
             "source": document.source,
             "chunk": document.chunk,
             "offset": document.offset,
+
         }
 
     def __generate_document_id(self, source_url: str) -> str:
@@ -144,6 +158,7 @@ If the image is mostly text, use OCR to extract the text as it is displayed in t
         image_vector: List[float],
         content: str,
         content_vector: List[float],
+        subject: str,
     ):
         parsed_url = urlparse(source_url)
 
@@ -172,4 +187,5 @@ If the image is mostly text, use OCR to extract the text as it is displayed in t
             ),
             "title": filename,
             "source": file_url + sas_placeholder,
+            "subject": subject,
         }

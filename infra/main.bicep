@@ -97,16 +97,19 @@ param azureOpenAIResourceName string = 'openai-${resourceToken}'
 param azureOpenAISkuName string = 'S0'
 
 @description('Azure OpenAI Model Deployment Name')
-param azureOpenAIModel string = 'gpt-35-turbo-16k'
+param azureOpenAIModel string = 'gpt-4'
+//param azureOpenAIModel string = 'gpt-35-turbo-16k'
 
 @description('Azure OpenAI Model Name')
-param azureOpenAIModelName string = 'gpt-35-turbo-16k'
+param azureOpenAIModelName string = 'gpt-4'
 
 @description('Azure OpenAI Model Version')
-param azureOpenAIModelVersion string = '0613'
+param azureOpenAIModelVersion string = '1106-Preview'
+//param azureOpenAIModelVersion string = '0613'
+
 
 @description('Azure OpenAI Model Capacity - See here for more info  https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to/quota')
-param azureOpenAIModelCapacity int = 30
+param azureOpenAIModelCapacity int = 15
 
 @description('Enables the use of a vision LLM and Computer Vision for embedding images')
 param useAdvancedImageProcessing bool = false
@@ -124,7 +127,7 @@ param azureOpenAIVisionModelName string = 'gpt-4'
 param azureOpenAIVisionModelVersion string = 'vision-preview'
 
 @description('Azure OpenAI Vision Model Capacity - See here for more info  https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to/quota')
-param azureOpenAIVisionModelCapacity int = 10
+param azureOpenAIVisionModelCapacity int = 15
 
 @description('Orchestration strategy: openai_function or semantic_kernel or langchain str. If you use a old version of turbo (0301), please select langchain')
 @allowed([
@@ -173,7 +176,7 @@ param azureOpenAIEmbeddingModelName string = 'text-embedding-ada-002'
 param azureOpenAIEmbeddingModelVersion string = '2'
 
 @description('Azure OpenAI Embedding Model Capacity - See here for more info  https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to/quota')
-param azureOpenAIEmbeddingModelCapacity int = 30
+param azureOpenAIEmbeddingModelCapacity int = 15
 
 @description('Name of Computer Vision Resource (if useAdvancedImageProcessing=true)')
 param computerVisionName string = 'computer-vision-${resourceToken}'
@@ -290,7 +293,7 @@ var blobContainerName = 'documents'
 var queueName = 'doc-processing'
 var clientKey = '${uniqueString(guid(subscription().id, deployment().name))}${newGuidString}'
 var eventGridSystemTopicName = 'doc-processing'
-var tags = { 'azd-env-name': environmentName }
+var tags = { 'azd-env-name': environmentName, group: 'LT', owner: 'peter.eze@crayon.com', costs_covered_by: 'internal' }
 var rgName = 'rg-${environmentName}'
 var keyVaultName = 'kv-${resourceToken}'
 

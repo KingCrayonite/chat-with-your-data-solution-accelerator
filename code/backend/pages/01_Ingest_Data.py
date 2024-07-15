@@ -34,6 +34,7 @@ def reprocess_all():
     backend_url = urllib.parse.urljoin(
         env_helper.BACKEND_URL, "/api/BatchStartProcessing"
     )
+    #st.write(backend_url)
     params = {}
     if env_helper.FUNCTION_KEY is not None:
         params["code"] = env_helper.FUNCTION_KEY
@@ -46,7 +47,7 @@ def reprocess_all():
                 f"{response.text}\nPlease note this is an asynchronous process and may take a few minutes to complete."
             )
         else:
-            st.error(f"Error: {response.text}")
+            st.error(f"Error: {response.text} {backend_url}:\n Error executing BatchStartProcessing")
     except Exception:
         st.error(traceback.format_exc())
 
@@ -74,11 +75,9 @@ def add_url_embeddings(urls: list[str]):
 
 
 try:
-    
-
     # Define the subjects and departments
-    subjects = ['COMP3018', 'CULT2017', 'NATS2033']
-    departments = ['Computer Science', 'Sociology', 'Biology']
+    subjects = ['COMP3018', 'CULT2017', 'NATS2033','MKTG1006']
+    departments = ['Computer Science', 'Sociology', 'Biology','Marketing']
 
     # Create dropdown widgets
     selected_subject = st.selectbox("Select a Subject", subjects)
@@ -106,8 +105,15 @@ try:
                 if st.session_state.get("filename", "") != up.name:
                     # Upload a new file
                     st.session_state["filename"] = up.name
+                    st.session_state["subject"] = selected_subject
+                    st.session_state["faculty"] = selected_department
+
+                    #concatenate subject, faculty and original document file name
+                    title = f"{selected_subject}_{selected_department}_{up.name}"
+
+                    # replace up.name with title to ensure required metadata is captured
                     st.session_state["file_url"] = blob_client.upload_file(
-                        bytes_data, up.name, metadata={"title": up.name}
+                        bytes_data, title, metadata={"title": title,"subject":selected_subject}
                     )
             if len(uploaded_files) > 0:
                 st.success(

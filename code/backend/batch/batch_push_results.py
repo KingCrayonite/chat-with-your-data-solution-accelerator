@@ -12,7 +12,7 @@ from utilities.search.search import Search
 bp_batch_push_results = func.Blueprint()
 logger = logging.getLogger(__name__)
 logger.setLevel(level=os.environ.get("LOGLEVEL", "INFO").upper())
-
+#logger.setLevel(level=os.environ.get("LOGLEVEL", "DEBUG").upper())
 
 def _get_file_name_from_message(message_body) -> str:
     return message_body.get(
@@ -48,11 +48,15 @@ def _process_document_created_event(message_body) -> None:
     env_helper: EnvHelper = EnvHelper()
 
     blob_client = AzureBlobStorageClient()
+
     file_name = _get_file_name_from_message(message_body)
+
     file_sas = blob_client.get_blob_sas(file_name)
 
     embedder = EmbedderFactory.create(env_helper)
+
     embedder.embed_file(file_sas, file_name)
+
 
 
 def _process_document_deleted_event(message_body) -> None:

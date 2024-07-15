@@ -97,6 +97,13 @@ class AzureSearchIndex:
                 facetable=True,
                 analyzer_name="keyword",
             ),
+            SearchableField(
+                name="subject",
+                type=SearchFieldDataType.String,
+                filterable=True,
+                facetable=True,
+            ),
+
         ]
 
         vector_search = self.get_vector_search_config()

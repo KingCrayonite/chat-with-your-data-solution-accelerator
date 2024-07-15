@@ -16,6 +16,8 @@ class SourceDocument:
         offset: Optional[int] = None,
         page_number: Optional[int] = None,
         chunk_id: Optional[str] = None,
+        subject: Optional[str] = None,
+        faculty: Optional[str] = None,
     ):
         self.id = id
         self.content = content
@@ -25,9 +27,11 @@ class SourceDocument:
         self.offset = offset
         self.page_number = page_number
         self.chunk_id = chunk_id
+        self.subject = subject
+        self.faculty = faculty
 
     def __str__(self):
-        return f"SourceDocument(id={self.id}, title={self.title}, source={self.source}, chunk={self.chunk}, offset={self.offset}, page_number={self.page_number}, chunk_id={self.chunk_id})"
+        return f"SourceDocument(id={self.id}, title={self.title}, source={self.source}, chunk={self.chunk}, offset={self.offset}, page_number={self.page_number}, chunk_id={self.chunk_id}, subject={self.subject}, faculty={self.faculty})"
 
     def __eq__(self, other):
         if isinstance(self, other.__class__):
@@ -40,6 +44,8 @@ class SourceDocument:
                 and self.offset == other.offset
                 and self.page_number == other.page_number
                 and self.chunk_id == other.chunk_id
+                and self.subject == other.subject
+                and self.faculty == other.faculty
             )
         return False
 
@@ -61,6 +67,8 @@ class SourceDocument:
             dict_obj["offset"],
             dict_obj["page_number"],
             dict_obj["chunk_id"],
+            dict_obj["subject"],
+
         )
 
     @classmethod
@@ -91,6 +99,7 @@ class SourceDocument:
             offset=metadata.get("offset"),
             page_number=metadata.get("page_number"),
             chunk_id=metadata.get("chunk_id"),
+            subject=metadata.get("subject"),
         )
 
     def get_filename(self, include_path=False):
@@ -124,6 +133,7 @@ class SourceDocumentEncoder(json.JSONEncoder):
                 "offset": obj.offset,
                 "page_number": obj.page_number,
                 "chunk_id": obj.chunk_id,
+                "subject": obj.subject,
             }
         return super().default(obj)
 
@@ -140,4 +150,5 @@ class SourceDocumentDecoder(json.JSONDecoder):
             offset=obj["offset"],
             page_number=obj["page_number"],
             chunk_id=obj["chunk_id"],
+            subject=obj["subject"],
         )

@@ -180,7 +180,7 @@ class AzureBlobStorageClient:
             self.container_name
         )
         blob_list = container_client.list_blobs(include="metadata")
-        # sas = generate_blob_sas(account_name, container_name, blob.name,account_key=account_key,  permission="r", expiry=datetime.utcnow() + timedelta(hours=3))
+        #sas = generate_blob_sas(account_name, container_name, blob.name,account_key=account_key,  permission="r", expiry=datetime.utcnow() + timedelta(hours=3))
         sas = generate_container_sas(
             self.account_name,
             self.container_name,
